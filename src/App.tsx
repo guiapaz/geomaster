@@ -3,23 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Calculator, 
-  BookOpen, 
-  Triangle, 
-  RotateCcw, 
-  Copy, 
-  Check, 
-  Moon, 
-  Sun,
-  Info,
-  ChevronRight,
-  ArrowRight
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 import 'katex/dist/katex.min.css';
-import { InlineMath, BlockMath } from 'react-katex';
+import {
+  BookOpen,
+  Calculator,
+  Check,
+  ChevronRight,
+  Copy,
+  Info,
+  Moon,
+  RotateCcw,
+  Sun,
+  Triangle
+} from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import React, { useEffect, useState } from 'react';
+import { BlockMath, InlineMath } from 'react-katex';
 
 // --- Types ---
 
@@ -40,7 +39,7 @@ const Tooltip = ({ text, children }: { text: string; children: React.ReactNode }
       {children}
       <AnimatePresence>
         {show && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
@@ -59,10 +58,10 @@ const TriangleVisualizer = ({ a, b, c, angleA }: { a: number; b: number; c: numb
   // Scale factor to fit in 200x200
   const maxSide = Math.max(a, b, isNaN(c) ? 0 : c) || 1;
   const scale = 150 / maxSide;
-  
+
   const width = b * scale;
   const height = a * scale;
-  
+
   // Padding
   const pad = 25;
 
@@ -82,62 +81,62 @@ const TriangleVisualizer = ({ a, b, c, angleA }: { a: number; b: number; c: numb
           strokeLinejoin="round"
           className="text-blue-500 dark:text-blue-400"
           initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ 
+          animate={{
             d: pathData,
-            pathLength: 1, 
-            opacity: 1 
+            pathLength: 1,
+            opacity: 1
           }}
-          transition={{ 
+          transition={{
             d: { type: "spring", stiffness: 100, damping: 20 },
             pathLength: { duration: 1.5, ease: "easeInOut" },
             opacity: { duration: 0.5 }
           }}
         />
-        
+
         {/* Right angle square */}
-        <motion.rect 
+        <motion.rect
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          x={pad} 
-          y={200 - pad - 15} 
-          width="15" 
-          height="15" 
-          fill="none" 
-          stroke="currentColor" 
+          x={pad}
+          y={200 - pad - 15}
+          width="15"
+          height="15"
+          fill="none"
+          stroke="currentColor"
           strokeWidth="1.5"
           className="text-slate-400"
         />
 
         {/* Labels with animation */}
-        <motion.text 
+        <motion.text
           animate={{ x: pad + width / 2, y: 200 - pad + 18 }}
-          textAnchor="middle" 
+          textAnchor="middle"
           className="text-[10px] fill-slate-500 font-mono"
         >
           b = {b.toFixed(1)}
         </motion.text>
-        <motion.text 
+        <motion.text
           animate={{ x: pad - 18, y: 200 - pad - height / 2 }}
-          textAnchor="middle" 
-          transform={`rotate(-90, ${pad - 18}, ${200 - pad - height / 2})`} 
+          textAnchor="middle"
+          transform={`rotate(-90, ${pad - 18}, ${200 - pad - height / 2})`}
           className="text-[10px] fill-slate-500 font-mono"
         >
           a = {a.toFixed(1)}
         </motion.text>
-        <motion.text 
+        <motion.text
           animate={{ x: pad + width / 2 + 10, y: 200 - pad - height / 2 - 10 }}
-          textAnchor="middle" 
+          textAnchor="middle"
           className="text-[10px] fill-slate-500 font-mono"
         >
           c = {c.toFixed(1)}
         </motion.text>
-        
+
         {angleA !== undefined && (
-          <motion.text 
+          <motion.text
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            x={pad + width - 25} 
-            y={200 - pad - 5} 
+            x={pad + width - 25}
+            y={200 - pad - 5}
             className="text-[10px] fill-blue-600 font-bold"
           >
             α = {angleA.toFixed(1)}°
@@ -178,10 +177,10 @@ export default function App() {
   const [trigAngle, setTrigAngle] = useState<string>('');
   const [trigSideType, setTrigSideType] = useState<Side>('c');
   const [trigSideVal, setTrigSideVal] = useState<string>('');
-  const [trigResult, setTrigResult] = useState<{ 
-    a: number; b: number; c: number; 
+  const [trigResult, setTrigResult] = useState<{
+    a: number; b: number; c: number;
     sin: number; cos: number; tan: number;
-    steps: CalculationStep[] 
+    steps: CalculationStep[]
   } | null>(null);
 
   useEffect(() => {
@@ -193,10 +192,10 @@ export default function App() {
   }, [darkMode]);
 
   const handleCopy = () => {
-    const text = activeTab === 'pythagoras' 
+    const text = activeTab === 'pythagoras'
       ? pythResult?.steps.map(s => `${s.text} ${s.math || ''}`).join('\n')
       : trigResult?.steps.map(s => `${s.text} ${s.math || ''}`).join('\n');
-    
+
     if (text) {
       navigator.clipboard.writeText(text);
       setCopied(true);
@@ -208,7 +207,7 @@ export default function App() {
     const a = parseFloat(pythA);
     const b = parseFloat(pythB);
     const c = parseFloat(pythC);
-    
+
     const steps: CalculationStep[] = [];
     let result = 0;
 
@@ -218,8 +217,8 @@ export default function App() {
       steps.push({ text: "Identificamos los catetos:", math: `a = ${a}, b = ${b}` });
       steps.push({ text: "Usamos la fórmula:", math: "c = \\sqrt{a^2 + b^2}" });
       steps.push({ text: "Sustituimos valores:", math: `c = \\sqrt{${a}^2 + ${b}^2}` });
-      steps.push({ text: "Calculamos cuadrados:", math: `c = \\sqrt{${(a*a).toFixed(2)} + ${(b*b).toFixed(2)}}` });
-      steps.push({ text: "Sumamos:", math: `c = \\sqrt{${(a*a + b*b).toFixed(2)}}` });
+      steps.push({ text: "Calculamos cuadrados:", math: `c = \\sqrt{${(a * a).toFixed(2)} + ${(b * b).toFixed(2)}}` });
+      steps.push({ text: "Sumamos:", math: `c = \\sqrt{${(a * a + b * b).toFixed(2)}}` });
       steps.push({ text: "Resultado final:", math: `c \\approx ${result.toFixed(4)}` });
       setPythResult({ val: result, steps });
     } else if (!isNaN(a) && !isNaN(c)) {
@@ -246,7 +245,7 @@ export default function App() {
   const calculateTrig = () => {
     const angleDeg = parseFloat(trigAngle);
     const sideVal = parseFloat(trigSideVal);
-    
+
     if (isNaN(angleDeg) || isNaN(sideVal)) return;
     if (angleDeg <= 0 || angleDeg >= 90) return alert("El ángulo debe estar entre 0° y 90°.");
 
@@ -289,7 +288,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
       {/* --- Header --- */}
-      <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-bottom border-slate-200 dark:border-slate-800">
+      <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-500/20">
@@ -297,15 +296,15 @@ export default function App() {
             </div>
             <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">GeoMaster</h1>
           </div>
-          
+
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => setShowReview(true)}
               className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors"
             >
               <BookOpen className="w-5 h-5" />
             </button>
-            <button 
+            <button
               onClick={() => setDarkMode(!darkMode)}
               className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors"
             >
@@ -318,14 +317,14 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* --- Tabs --- */}
         <div className="flex p-1 bg-slate-200/50 dark:bg-slate-800/50 rounded-2xl mb-8 max-w-md mx-auto">
-          <button 
+          <button
             onClick={() => setActiveTab('pythagoras')}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'pythagoras' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
           >
             <Calculator className="w-4 h-4" />
             Pitágoras
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('trig')}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'trig' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
           >
@@ -337,7 +336,7 @@ export default function App() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* --- Input Section --- */}
           <div className="lg:col-span-4 space-y-6">
-            <motion.div 
+            <motion.div
               key={activeTab}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -354,8 +353,8 @@ export default function App() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 ml-1">Cateto a</label>
-                    <input 
-                      type="number" 
+                    <input
+                      type="number"
                       value={pythA}
                       onChange={(e) => setPythA(e.target.value)}
                       placeholder="Valor de a"
@@ -364,8 +363,8 @@ export default function App() {
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 ml-1">Cateto b</label>
-                    <input 
-                      type="number" 
+                    <input
+                      type="number"
                       value={pythB}
                       onChange={(e) => setPythB(e.target.value)}
                       placeholder="Valor de b"
@@ -374,15 +373,15 @@ export default function App() {
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 ml-1">Hipotenusa c</label>
-                    <input 
-                      type="number" 
+                    <input
+                      type="number"
                       value={pythC}
                       onChange={(e) => setPythC(e.target.value)}
                       placeholder="Valor de c"
                       className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                     />
                   </div>
-                  <button 
+                  <button
                     onClick={calculatePythagoras}
                     className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2 group"
                   >
@@ -394,8 +393,8 @@ export default function App() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 ml-1">Ángulo α (Grados)</label>
-                    <input 
-                      type="number" 
+                    <input
+                      type="number"
                       value={trigAngle}
                       onChange={(e) => setTrigAngle(e.target.value)}
                       placeholder="Ej: 30"
@@ -405,7 +404,7 @@ export default function App() {
                   <div className="flex gap-2">
                     <div className="flex-1">
                       <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 ml-1">Lado conocido</label>
-                      <select 
+                      <select
                         value={trigSideType}
                         onChange={(e) => setTrigSideType(e.target.value as Side)}
                         className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 outline-none"
@@ -417,8 +416,8 @@ export default function App() {
                     </div>
                     <div className="flex-1">
                       <label className="block text-xs font-semibold text-slate-500 uppercase mb-1 ml-1">Valor</label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         value={trigSideVal}
                         onChange={(e) => setTrigSideVal(e.target.value)}
                         placeholder="Valor"
@@ -426,7 +425,7 @@ export default function App() {
                       />
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={calculateTrig}
                     className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/30 transition-all flex items-center justify-center gap-2 group"
                   >
@@ -439,14 +438,14 @@ export default function App() {
 
             {/* --- Results Summary --- */}
             {(pythResult || trigResult) && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="bg-blue-600 dark:bg-blue-700 p-6 rounded-3xl text-white shadow-xl shadow-blue-500/20"
               >
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="font-bold text-lg">Resultado</h3>
-                  <button 
+                  <button
                     onClick={handleCopy}
                     className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
                   >
@@ -480,22 +479,22 @@ export default function App() {
           {/* --- Visualization & Steps --- */}
           <div className="lg:col-span-8 space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <TriangleVisualizer 
+              <TriangleVisualizer
                 a={activeTab === 'pythagoras' ? (parseFloat(pythA) || 0) : (trigResult?.a || 0)}
                 b={activeTab === 'pythagoras' ? (parseFloat(pythB) || 0) : (trigResult?.b || 0)}
                 c={activeTab === 'pythagoras' ? (pythResult?.val || parseFloat(pythC) || 0) : (trigResult?.c || 0)}
                 angleA={activeTab === 'trig' ? parseFloat(trigAngle) : undefined}
               />
-              
+
               <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
                 <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-6 uppercase tracking-wider">Procedimiento Paso a Paso</h3>
                 <div className="flex-1 space-y-6 overflow-y-auto pr-2 custom-scrollbar">
                   {(activeTab === 'pythagoras' ? pythResult?.steps : trigResult?.steps)?.map((step, i) => (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.1 }}
-                      key={i} 
+                      key={i}
                       className="relative pl-8 border-l-2 border-slate-100 dark:border-slate-800 pb-2"
                     >
                       <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-600 flex items-center justify-center">
@@ -509,11 +508,11 @@ export default function App() {
                       )}
                     </motion.div>
                   )) || (
-                    <div className="h-full flex flex-col items-center justify-center text-slate-400 text-center px-8">
-                      <Calculator className="w-12 h-12 mb-4 opacity-20" />
-                      <p className="text-sm">Ingresa los datos y presiona calcular para ver el procedimiento detallado.</p>
-                    </div>
-                  )}
+                      <div className="h-full flex flex-col items-center justify-center text-slate-400 text-center px-8">
+                        <Calculator className="w-12 h-12 mb-4 opacity-20" />
+                        <p className="text-sm">Ingresa los datos y presiona calcular para ver el procedimiento detallado.</p>
+                      </div>
+                    )}
                 </div>
               </div>
             </div>
@@ -525,14 +524,14 @@ export default function App() {
       <AnimatePresence>
         {showReview && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowReview(false)}
               className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -543,7 +542,7 @@ export default function App() {
                   <BookOpen className="w-6 h-6 text-blue-600" />
                   Repaso de Geometría
                 </h2>
-                
+
                 <div className="space-y-8">
                   <section>
                     <h3 className="text-lg font-bold text-blue-600 mb-3">1. El Triángulo Rectángulo</h3>
@@ -588,7 +587,7 @@ export default function App() {
                   </section>
                 </div>
 
-                <button 
+                <button
                   onClick={() => setShowReview(false)}
                   className="mt-8 w-full py-4 bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-bold rounded-2xl hover:opacity-90 transition-opacity"
                 >
